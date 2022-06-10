@@ -38,7 +38,7 @@ If you use this code, please cite:
 # Code
 
 ## System requirements
-- Conda (https://docs.conda.io/projects/conda/en/latest/index.html)
+- [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)
 - GPU (suggested; never tried training/inference without a GPU)
 
 ## Installation
