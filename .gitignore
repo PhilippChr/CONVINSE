@@ -1,0 +1,33 @@
+# meta data
+*__pycache__
+convinse.egg-info/
+.DS_Store
+
+# data folders
+_data/
+_intermediate_representations/
+_benchmarks/
+
+# specific folders
+*results/
+*logs/
+*cache/
+*examples/
+*out/
+*runs/
+*tmp/
+
+# data files
+*.pickle
+*.out
+*.json
+*.txt
+
+# specific paths
+clocq/
+convmix/
+test.py
+
+# other repos
+convinse/heterogeneous_answering/fid_module/FiD/
+convinse/question_understanding/question_resolution/quretec/
