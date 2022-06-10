@@ -188,10 +188,11 @@ Further information on how to retrieve evidences from Wikidata can be found in t
 
 
 ## Wikipedia
-Wikipedia evidences can be retrieved on-the-fly using the [`WikipediaRetriever`]() package. However, we provide a ConvMix-related subset, that can be downloaded via (already downloaded in default [initialize script](scripts/initialize.sh)):
+Wikipedia evidences can be retrieved on-the-fly using the [`WikipediaRetriever`]() package. However, we provide a ConvMix-related subset, that can be downloaded via:
 ``` bash
     bash scripts/download.sh wikipedia
 ```
+Note that this data is also downloaded by the default [initialize script](scripts/initialize.sh)).   
 The dump is provided as a .pickle file, and provides a mapping from Wikidata item IDs (e.g. Q38111) to Wikipedia evidences.
 
 This ConvMix-related subset has been created as follows. We added evidences retrieved from Wikipedia in 2022-03/04 for the following Wikidata items:
