@@ -39,6 +39,7 @@ If you use this code, please cite:
 
 ## System requirements
 - [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)
+- [PyTorch](https://pytorch.org)
 - GPU (suggested; never tried training/inference without a GPU)
 
 ## Installation
@@ -50,6 +51,12 @@ Clone the repo via:
     conda create --name convinse python=3.8
     conda activate convinse
     pip install -e .
+
+    # install PyTorch for CUDA 10.2
+    conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+
+    # install PyTorch for CUDA 11.3
+    conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 ```
 
 
