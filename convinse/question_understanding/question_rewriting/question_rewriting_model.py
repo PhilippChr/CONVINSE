@@ -75,14 +75,14 @@ class QuestionRewritingModel(torch.nn.Module):
         # store model
         self.save()
 
-    def inference(self, input):
+    def inference(self, inputs):
         """
         Run the model on the given input.
         Snippet taken from: https://github.com/gonced8/rachael-scai/blob/main/demo.py
         """
         # encode
         rewrite_input_ids = self.tokenizer.encode(
-            input,
+            inputs,
             truncation=False,
             return_tensors="pt",
         )

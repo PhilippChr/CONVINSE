@@ -1,3 +1,4 @@
+import os
 import json
 import torch
 
@@ -29,17 +30,37 @@ def _history_turn_to_text(history_turn, history_separator):
     return history_turn_text
 
 
+def extract_mapping_incomplete_complete(data_paths):
+    """
+    Extract mapping from incomplete questions to complete
+    questions for all follow-up questions.
+    """
+    mapping_incomplete_to_complete = dict()
+    for data_path in data_paths:
+        with open(data_path, "r") as fp:
+            dataset = json.load(fp)
+
+        for conversation in dataset:
+            for turn in conversation["questions"]:
+                if turn["turn"] == 0:
+                    continue
+                question = turn["question"]
+                completed = turn["completed"]
+                mapping_incomplete_to_complete[question] = completed
+    return mapping_incomplete_to_complete
+    
+
 class DatasetQuestionRewriting(torch.utils.data.Dataset):
     def __init__(self, config, tokenizer, path):
         self.config = config
         self.tokenizer = tokenizer
         self.history_separator = config["history_separator"]
 
-        benchmark_name = config["benchmark"]
-        seed_conversations_path = config["seed_conversations_path"]
-        self.mapping_incomplete_to_complete = extract_mapping_incomplete_complete(
-            benchmark_name, seed_conversations_path
-        )
+        benchmark_path = config["benchmark_path"]
+        train_path = os.path.join(benchmark_path, config["train_input_path"])
+        dev_path = os.path.join(benchmark_path, config["dev_input_path"])
+        data_paths = [train_path, dev_path]
+        self.mapping_incomplete_to_complete = extract_mapping_incomplete_complete(data_paths)
 
         input_encodings, output_encodings, dataset_length = self._load_data(path)
         self.input_encodings = input_encodings
@@ -49,8 +70,6 @@ class DatasetQuestionRewriting(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         item = {key: torch.tensor(val[idx]) for key, val in self.input_encodings.items()}
         labels = self.output_encodings["input_ids"][idx]
-        # decoder_input_ids = shift_tokens_right(labels, model.config.pad_token_id)
-        # labels[labels[:, :] == model.config.pad_token_id] = -100
         item = {
             "input_ids": item["input_ids"],
             "attention_mask": item["attention_mask"],
