@@ -110,7 +110,7 @@ class FiDModule(HeterogeneousAnswering):
         name = f"{method_name}_{sources_string}"
         COMMAND = [self.path_to_fid_python_env, f"{self.path_to_fid}/train_reader.py"]
         COMMAND += ["--name", name]
-        COMMAND += ["--checkpoint_dir", f"_data/{benchmark}/{qu}/fid"]
+        COMMAND += ["--checkpoint_dir", f"_data/{benchmark}/{method_name}/fid"]
         COMMAND += ["--train_data", prepared_train_path]
         COMMAND += ["--eval_data", prepared_dev_path]
         COMMAND += ["--model_size", "base"]

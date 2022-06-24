@@ -86,6 +86,10 @@ def _prepare_turn(config, input_turn, train):
     if train and not target_answers:
         return None
 
+    # if no answer in dataset, skip (fix for TimeQuestions dataset)
+    if not input_turn["answers"]:
+        return None
+
     evidences = input_turn["top_evidences"]
     evidences = evidences[: config["fid_max_evidences"]]
 
@@ -129,7 +133,7 @@ def get_ranked_answers(config, generated_answer, turn, convquestions=False):
         if generated_answer is None:
             return [{"answer": {"id": "None", "label": "None"}, "rank": 1, "score": 0.0}]
         smallest_diff = 100000
-        ranked_answers = list()
+        all_answers = list()
         mentions = set()
         for evidence in turn["top_evidences"]:
             for disambiguation in evidence["disambiguations"]:
@@ -150,46 +154,15 @@ def get_ranked_answers(config, generated_answer, turn, convquestions=False):
                 else:
                     diff = levenshtein_distance(generated_answer, mention)
 
-                # ranked answers different for convquestions
-                if convquestions and diff <= smallest_diff:
-                    # check if new single best answer
-                    if diff < smallest_diff:
-                        smallest_diff = diff
-                        # add 1 to all ranks
-                        if ranked_answers:
-                            for answer in ranked_answers:
-                                answer["rank"] += 1
-                        # put new top ranked upfront
-                        ranked_answers = [
-                            {"answer": {"id": id, "label": mention}, "rank": 1, "score": diff}
-                        ] + ranked_answers
-                    # check if new best answer (among other) -> resolve ranking
-                    elif diff == smallest_diff:
-                        ranked_answers.append(
-                            {"answer": {"id": id, "label": mention}, "rank": 1, "score": diff}
-                        )
-                        for answer in ranked_answers:
-                            if answer["rank"] > 1:
-                                answer["rank"] += 1
-                # ranked answers for standard dataset
-                elif diff <= smallest_diff:
-                    # check if new single best answer
-                    if diff < smallest_diff:
-                        smallest_diff = diff
-                        ranked_answers = [
-                            {"answer": {"id": id, "label": mention}, "rank": 1, "score": diff}
-                        ]
-                    # check if new best answer (among other) -> resolve ranking
-                    elif diff == smallest_diff:
-                        ranked_answers.append(
-                            {
-                                "answer": {"id": id, "label": mention},
-                                "rank": len(ranked_answers) + 1,
-                                "score": diff,
-                            }
-                        )
+                all_answers.append({"answer": {"id": id, "label": mention}, "score": diff})
 
-    # don't return too many answers
+        sorted_answers = sorted(all_answers, key = lambda j: j['score'])
+        ranked_answers = [
+            {"answer": answer["answer"], "score": answer["score"], "rank": i+1}
+            for i, answer in enumerate(sorted_answers)
+        ]
+
+    # don't return all answers
     max_answers = config["fid_max_answers"]
     ranked_answers = ranked_answers[:max_answers]
     if not ranked_answers:

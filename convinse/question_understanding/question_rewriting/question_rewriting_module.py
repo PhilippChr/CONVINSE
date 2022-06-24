@@ -45,17 +45,21 @@ class QuestionRewritingModule(QuestionUnderstanding):
             question = turn["question"]
             history_turns.append(question)
 
-            # prepare input (omitt gold answer(s))
-            rewrite_input = self.history_separator.join(history_turns)
+            # no rewrites for complete questions
+            if i == 0:
+                turn["structured_representation"] = question
+            else:
+                # prepare input (omitt gold answer(s))
+                rewrite_input = self.history_separator.join(history_turns)
 
-            # run inference
-            qrew = self.qr_model.inference(rewrite_input)
-            turn["structured_representation"] = qrew
+                # run inference
+                qrew = self.qr_model.inference(rewrite_input)
+                turn["structured_representation"] = qrew
 
             # only append answer if there is a next question
             if i + 1 < len(conversation["questions"]):
                 if self.use_gold_answers:
-                    answer_text = ", ".join([answer["label"] for answer in turn["answers"]])
+                    answer_text = " ".join([answer["label"] for answer in turn["answers"]])
                 else:
                     # answer_text = ", ".join([answer["label"] for answer in turn["pred_answers"]])
                     answer_text = turn["pred_answers"][0]["label"]
