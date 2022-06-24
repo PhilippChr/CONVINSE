@@ -20,18 +20,6 @@ case "$1" in
     rm convinse.zip
     echo "Successfully downloaded data for '$1'!"
     ;;
-"nc_all-clocq_bm25-fid")
-    echo "Data for '$1' not (yet) available!"
-    ;;
-"nc_init-clocq_bm25-fid")
-    echo "Data for '$1' not (yet) available!"
-    ;;
-"nc_init_prev-clocq_bm25-fid")
-    echo "Data for '$1' not (yet) available!"
-    ;;
-"nc_prev-clocq_bm25-fid")
-    echo "Data for '$1' not (yet) available!"
-    ;;
 "wikipedia")
     echo "Downloading data for '$1'..."
     wget http://qa.mpi-inf.mpg.de/convinse/convmix_data/wikipedia.zip
