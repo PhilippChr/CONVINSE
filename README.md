@@ -9,6 +9,8 @@ CONVINSE: Conversational Question Answering on Heterogeneous Sources
 	- [Training the pipeline](#training-the-pipeline)
 	- [Testing the pipeline](#testing-the-pipeline)
 	- [Using the pipeline](#using-the-pipeline)
+- [ConvMix](#convmix)
+	- [Loading ConvMix](#loading-convmix)
 	- [Comparing on ConvMix](#comparing-on-convmix)
 - [Data](#data)
 	- [Wikidata](#wikidata)
@@ -38,6 +40,7 @@ If you use this code, please cite:
 # Code
 
 ## System requirements
+All code was tested on Linux only.
 - [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)
 - [PyTorch](https://pytorch.org)
 - GPU (suggested; never tried training/inference without a GPU)
@@ -52,10 +55,13 @@ Clone the repo via:
     conda activate convinse
     pip install -e .
 
-    # install PyTorch for CUDA 10.2
+    # install PyTorch without CUDA
+    conda install pytorch torchvision torchaudio -c pytorch
+
+    # install PyTorch for CUDA 10.2 (using GPU)
     conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
 
-    # install PyTorch for CUDA 11.3
+    # install PyTorch for CUDA 11.3 (using GPU)
     conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 ```
 
@@ -179,6 +185,86 @@ Please see the documentation of the individual modules for further details:
 - [Question Understanding (QU)](convinse/question_understanding/README.md)
 - [Evidence Retrieval and Scoring (ERS)](convinse/evidence_retrieval_scoring/README.md)
 - [Heterogeneous Answering (HA)](convinse/heterogeneous_answering/README.md)
+
+# ConvMix
+## Loading ConvMix
+The ConvMix dataset can be downloaded (if not already done so via the initialize-script) via:
+```
+	bash scripts/download.sh convmix
+```
+
+Then, the individual ConvMix data splits can be loaded via:
+```
+	import json
+	with open ("_benchmarks/convmix/train_set_ALL.json", "r") as fp:
+		train_data = json.load(fp)
+	with open ("_benchmarks/convmix/dev_set_ALL.json", "r") as fp:
+		dev_data = json.load(fp)
+	with open ("_benchmarks/convmix/test_set_ALL.json", "r") as fp:
+		test_data = json.load(fp)
+```
+
+You could also load domain-specific versions, by replacing "ALL" by either "books", "movies", "music", "soccer" or "tvseries".    
+The data will have the following format:
+```
+[
+	// first conversation
+	{	
+		"conv_id": "<INT>",
+		"domain": "<STRING>",
+		"questions": [
+			// question 1 (complete)
+			{
+				"turn": 0,
+				"question_id": "<STRING: QUESTION-ID>", 
+				"question": "<STRING: QUESTION>", 
+				"answers": [
+					{
+						"id": "<STRING: Wikidata ID of answer>",
+						"label": "<STRING: Item Label of answer>
+					},
+				]
+				"answer_text": "<STRING: textual form of answer>",
+				"answer_src": "<STRING: source the worker found the answer>",
+				"entities": [
+					{
+						"id": "<STRING: Wikidata ID of question entity>",
+						"label": "<STRING: Item Label of question entity>
+					},
+				],
+				"paraphrase": "<STRING: paraphrase of current question>"
+				
+			},
+			// question 2 (incomplete)
+			{
+				"turn": 1,
+				"question_id": "<STRING: QUESTION-ID>", 
+				"question": "<STRING: QUESTION>", 
+				"answers": [
+					{
+						"id": "<STRING: Wikidata ID of answer>",
+						"label": "<STRING: Item Label of answer>
+					},
+				]
+				"answer_text": "<STRING: textual form of answer>",
+				"answer_src": "<STRING: source the worker found the answer>",
+				"entities": [
+					{
+						"id": "<STRING: Wikidata ID of question entity>",
+						"label": "<STRING: Item Label of question entity>
+					},
+				],
+				"paraphrase": "<STRING: paraphrase of current question>",
+				"completed": "<STRING: completed version of current incomplete question>"
+		]
+	},
+	// second conversation
+	{
+		...
+	},
+	// ...
+]
+```
 
 
 ## Comparing on ConvMix
