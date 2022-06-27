@@ -34,7 +34,6 @@ source_combinations:
 #################################################################
 path_to_stopwords: "_data/stopwords.txt"
 path_to_labels: "_data/labels.json"
-path_to_wikipedia2vec: "_data/enwiki_20180420_300d.pkl"
 path_to_wikipedia_mappings: "_data/wikipedia_mappings.json"
 path_to_wikidata_mappings: "_data/wikidata_mappings.json"
 
@@ -108,6 +107,8 @@ evs_max_evidences: 100
 #  Parameters - HA
 #################################################################
 # general
+ha_max_answers: 50
+
 fid_model_path: "_data/convmix/qres/fid/best_dev"
 fid_per_gpu_batch_size: 1
 fid_max_evidences: 100
@@ -124,5 +125,4 @@ fid_warmup_step: 1000
 
 # inference
 fid_max_evidences: 100
-fid_max_answers: 50
 fid_num_beams: 20

@@ -3,6 +3,8 @@ import json
 from tqdm import tqdm
 
 from convinse.library.string_library import StringLibrary
+from Levenshtein import distance as levenshtein_distance
+
 
 def answer_presence(evidences, answers):
     """
@@ -90,6 +92,62 @@ def hit_at_5(answers, gold_answers):
         elif candidate_in_answers(answer["answer"], gold_answers):
             return 1.0
     return 0.0
+
+
+def get_ranked_answers(config, generated_answer, turn):
+    """
+    Convert the predicted answer text to a Wikidata ID (or Yes/No),
+    and return the ranked answers.
+    Can be used for any method that predicts an answer string (instead of a KB item).
+    """
+    # check if existential (special treatment)
+    question = turn["question"]
+    if question_is_existential(question):
+        ranked_answers = [
+            {"answer": {"id": "yes", "label": "yes"}, "score": 1.0, "rank": 1},
+            {"answer": {"id": "no", "label": "no"}, "score": 0.5, "rank": 2},
+        ]
+    # no existential
+    else:
+        # return dummy answer in case None was found (if no evidences found)
+        if generated_answer is None:
+            return [{"answer": {"id": "None", "label": "None"}, "rank": 1, "score": 0.0}]
+        smallest_diff = 100000
+        all_answers = list()
+        mentions = set()
+        for evidence in turn["top_evidences"]:
+            for disambiguation in evidence["disambiguations"]:
+                mention = disambiguation[0]
+                id = disambiguation[1]
+                if id is None or id == False:
+                    continue
+
+                # skip duplicates
+                ans = str(mention) + str(id)
+                if ans in mentions:
+                    continue
+                mentions.add(ans)
+                # exact match
+                if generated_answer == mention:
+                    diff = 0
+                # otherwise compute edit distance
+                else:
+                    diff = levenshtein_distance(generated_answer, mention)
+
+                all_answers.append({"answer": {"id": id, "label": mention}, "score": diff})
+
+        sorted_answers = sorted(all_answers, key = lambda j: j['score'])
+        ranked_answers = [
+            {"answer": answer["answer"], "score": answer["score"], "rank": i+1}
+            for i, answer in enumerate(sorted_answers)
+        ]
+
+    # don't return all answers
+    max_answers = config["ha_max_answers"]
+    ranked_answers = ranked_answers[:max_answers]
+    if not ranked_answers:
+        ranked_answers = [{"answer": {"id": "None", "label": "None"}, "rank": 1, "score": 0.0}]
+    return ranked_answers
 
 
 def question_is_existential(question):

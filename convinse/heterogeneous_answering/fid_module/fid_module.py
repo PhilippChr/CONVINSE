@@ -146,9 +146,8 @@ class FiDModule(HeterogeneousAnswering):
         turn["generated_answer"] = generated_answer
 
         # get ranked answers
-        is_convquestions = self.config["benchmark"] == "convquestions"
-        ranked_answers = fid_utils.get_ranked_answers(
-            self.config, generated_answer, turn, is_convquestions
+        ranked_answers = evaluation.get_ranked_answers(
+            self.config, generated_answer, turn
         )
         try:
             turn["pred_answers"] = [

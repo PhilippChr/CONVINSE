@@ -82,3 +82,24 @@ def print_verbose(config, string):
     """Print the given string if verbose is set."""
     if config["verbose"]:
         print(str(string))
+
+
+def extract_mapping_incomplete_complete(data_paths):
+    """
+    Extract mapping from incomplete questions to complete
+    questions for all follow-up questions.
+    """
+    mapping_incomplete_to_complete = dict()
+    for data_path in data_paths:
+        with open(data_path, "r") as fp:
+            dataset = json.load(fp)
+
+        for conversation in dataset:
+            for turn in conversation["questions"]:
+                if turn["turn"] == 0:
+                    continue
+                question = turn["question"]
+                completed = turn["completed"]
+                mapping_incomplete_to_complete[question] = completed
+    return mapping_incomplete_to_complete
+

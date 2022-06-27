@@ -3,7 +3,7 @@ import json
 import torch
 
 from convinse.library.string_library import StringLibrary as string_lib
-
+from convinse.library.utils import extract_mapping_incomplete_complete
 
 def input_to_text(history_turns, current_turn, history_separator):
     """
@@ -28,26 +28,6 @@ def _history_turn_to_text(history_turn, history_separator):
     answers_text = " ".join([answer["label"] for answer in answers])
     history_turn_text = f"{question}{history_separator}{answers_text}"
     return history_turn_text
-
-
-def extract_mapping_incomplete_complete(data_paths):
-    """
-    Extract mapping from incomplete questions to complete
-    questions for all follow-up questions.
-    """
-    mapping_incomplete_to_complete = dict()
-    for data_path in data_paths:
-        with open(data_path, "r") as fp:
-            dataset = json.load(fp)
-
-        for conversation in dataset:
-            for turn in conversation["questions"]:
-                if turn["turn"] == 0:
-                    continue
-                question = turn["question"]
-                completed = turn["completed"]
-                mapping_incomplete_to_complete[question] = completed
-    return mapping_incomplete_to_complete
     
 
 class DatasetQuestionRewriting(torch.utils.data.Dataset):
@@ -108,7 +88,7 @@ class DatasetQuestionRewriting(torch.utils.data.Dataset):
 
                 # create output
                 question = turn["question"]
-                complete = turn["completed"]
+                complete = self.mapping_incomplete_to_complete.get(question)
                 outputs.append(complete)
 
                 # append to history

@@ -100,10 +100,6 @@ Initialize the repo (download data, benchmark, models):
     bash scripts/initialize.sh
 ```
 
-**Compatibility Notes**   
-ImportError (version GLIBC_2.29 not found) occured when using latest/default version of tokenizers.  
-=> Install tokenizers==0.10.1 via pip
-
 
 ## Reproduce paper results
 You can either reproduce all results in Table 6, or only the results for a specific source (combination).
