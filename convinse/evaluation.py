@@ -4,48 +4,6 @@ from tqdm import tqdm
 
 from convinse.library.string_library import StringLibrary
 
-
-def evaluate_gnn(top_candidates, gold_answers, gold_answers_in_graph, question):
-    """
-    Evaluate the outputs by the GNN.
-    """
-    # get ranking
-    if question_is_existential(question):
-        answer_presence = True
-        ranked_answers = [
-            {"answer": {"id": "yes", "label": "yes"}, "score": 1.0, "rank": 1},
-            {"answer": {"id": "no", "label": "no"}, "score": 0.5, "rank": 2},
-        ]
-    else:
-        answer_presence = len(gold_answers_in_graph) > 0
-        # filter out masked entities
-        top_candidates = [
-            candidate for candidate in top_candidates if type(candidate["entity"]) == dict
-        ]
-        # create answer dicts
-        ranked_answers = [
-            {
-                "answer": answer["entity"],
-                "answer_label": answer["entity"]["label"],
-                "score": answer["score"],
-                "rank": (i + 1),
-            }
-            for i, answer in enumerate(top_candidates)
-        ]
-    # compute scores
-    p_at_1 = precision_at_1(ranked_answers, gold_answers)
-    h_at_5 = hit_at_5(ranked_answers, gold_answers)
-    mrr = mrr_score(ranked_answers, gold_answers)
-    # create result
-    res = {
-        "precision_at_1": p_at_1,
-        "hit_at_5": h_at_5,
-        "mrr_score": mrr,
-        "answer_presence": 1 if answer_presence else 0,
-    }
-    return res
-
-
 def answer_presence(evidences, answers):
     """
     Compute the answer presence for a set of evidences
