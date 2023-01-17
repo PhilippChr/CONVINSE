@@ -40,37 +40,39 @@ class StructuredRepresentationModule(QuestionUnderstanding):
         # load SR model (if required)
         self._load()
 
-        # SR model inference
-        history_turns = list()
-        for i, turn in enumerate(conversation["questions"]):
-            self.inference_on_turn(turn, history_turns)
+        with torch.no_grad():
+            # SR model inference
+            history_turns = list()
+            for i, turn in enumerate(conversation["questions"]):
+                self.inference_on_turn(turn, history_turns)
 
-            # only append answer if there is a next question
-            if i + 1 < len(conversation["questions"]):
-                if self.use_gold_answers:
-                    answer_text = ", ".join([answer["label"] for answer in turn["answers"]])
-                else:
-                    # answer_text = ", ".join([answer["label"] for answer in turn["pred_answers"]])
-                    answer_text = turn["pred_answers"][0]["label"]
-                history_turns.append(answer_text)
-        return conversation
+                # only append answer if there is a next question
+                if i + 1 < len(conversation["questions"]):
+                    if self.use_gold_answers:
+                        answer_text = ", ".join([answer["label"] for answer in turn["answers"]])
+                    else:
+                        # answer_text = ", ".join([answer["label"] for answer in turn["pred_answers"]])
+                        answer_text = turn["pred_answers"][0]["label"]
+                    history_turns.append(answer_text)
+            return conversation
 
     def inference_on_turn(self, turn, history_turns):
         """Run inference on a single turn."""
         # load SR model (if required)
         self._load()
 
-        # SR model inference
-        question = turn["question"]
-        history_turns.append(question)
+        with torch.no_grad():
+            # SR model inference
+            question = turn["question"]
+            history_turns.append(question)
 
-        # prepare input (omitt gold answer(s))
-        rewrite_input = self.history_separator.join(history_turns)
+            # prepare input (omitt gold answer(s))
+            rewrite_input = self.history_separator.join(history_turns)
 
-        # run inference
-        sr = self.sr_model.inference(rewrite_input)
-        turn["structured_representation"] = sr
-        return turn
+            # run inference
+            sr = self.sr_model.inference(rewrite_input)
+            turn["structured_representation"] = sr
+            return turn
 
     def _load(self):
         """Load the SR model."""
@@ -78,7 +80,7 @@ class StructuredRepresentationModule(QuestionUnderstanding):
         if not self.model_loaded:
             self.sr_model.load()
             self.sr_model.set_eval_mode()
-            self.sr_model_loaded = True
+            self.model_loaded = True
 
     def adjust_sr_for_ablation(self, sr, ablation_type):
         """
