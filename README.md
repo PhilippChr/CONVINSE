@@ -272,7 +272,7 @@ Please make sure that...
 
 # Data
 ## Wikidata
-For the CONVINSE paper, the Wikidata dump with the timestamp 2022-01-31 was used, which is currently also accessible via the [CLOCQ API](https://clocq.mpi-inf.mpg.de).
+For the CONVINSE paper, the Wikidata dump with the timestamp 2022-01-31 was used. The most recent dump (could be more recent than the one used in CONVINSE) is also accessible via the [CLOCQ API](https://clocq.mpi-inf.mpg.de).
 Further information on how to retrieve evidences from Wikidata can be found in the [ERS documentation](convinse/evidence_retrieval_scoring/README.md#wikidata-access).
 
 
