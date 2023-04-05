@@ -29,10 +29,11 @@ Experiments are conducted on the newly collected dataset **ConvMix**, which is r
 
 If you use this code, please cite:
 ```bibtex
-@article{christmann2022conversational,
+@inproceedings{christmann2022conversational,
   title={Conversational Question Answering on Heterogeneous Sources},
-  author={Christmann, Philipp and Roy, Rishiraj Saha and Weikum, Gerhard},
-  journal={arXiv preprint arXiv:2204.11677},
+  author={Philipp Christmann and Saha Roy, Rishiraj and Gerhard Weikum},
+  booktitle={SIGIR},
+  pages={144--154},
   year={2022}
 }
 ```
