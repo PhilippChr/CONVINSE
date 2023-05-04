@@ -103,14 +103,14 @@ Initialize the repo (download data, benchmark, models):
 
 
 ## Reproduce paper results
-You can either reproduce all results in Table 6, or only the results for a specific source (combination).
+You can either reproduce all results of CONVINSE in Table 6, or only the results for a specific source (combination).
 
 For reproducing all results, run:
 ``` bash
     bash scripts/pipeline.sh --main-results
 ```
 
-If you would like to reproduce only the results for a specific source combination, run:
+If you would like to reproduce only the results of CONVINSE for a specific source combination, run:
 ``` bash
     bash scripts/pipeline.sh --gold-answers config/convmix/convinse.yml kb_text_table_info
 ```
@@ -119,6 +119,8 @@ Note, that CONVINSE retrieves evidences on-the-fly by default.
 Given that the evidences in the information sources can change quickly (e.g. Wikipedia has many updates every day),
 results can easily change.
 A cache was implemented to improve the reproducability, and we provide a benchmark-related subset of Wikipedia (see details [below](#wikipedia)).
+
+The results will be logged in the `out/convmix` directory, and the metrics written to `_results/convmix/convinse.res`.
 
 ## Training the pipeline
 
@@ -173,7 +175,12 @@ Example:
 ``` bash
     bash scripts/pipeline.sh --pred-answers config/convmix/convinse.yml kb_text_table_info
 ```
-By default, the convinse config and all sources will be used.
+By default, the CONVINSE config and all sources will be used.
+
+
+The results will be logged in the following directory: `out/<DATA>/<CMD>-<FUNCTION>-<CONFIG_NAME>.out`,  
+and the metrics are written to: `_results/<DATA>/<CONFIG_NAME>.res`.
+
 
 ## Using the pipeline
 For using the pipeline, e.g. for improving individual parts of the pipeline, you can simply implement your own method that inherits from the respective part of the pipeline, create a corresponding config file, and add the module to the pipeline.py file. You can then use the commands outlined above to train and test the pipeline. 
