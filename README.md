@@ -1,3 +1,5 @@
+## Link to our follow-up work in SIGIR 2023: [EXPLAIGNN](https://github.com/PhilippChr/EXPLAIGNN).
+
 CONVINSE: Conversational Question Answering on Heterogeneous Sources
 ============
 
